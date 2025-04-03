@@ -63,6 +63,22 @@ class GoogleAuth:
             self.logger.error({'message':f"HTTP Error occurred: {err}"})
             raise
 
+    def build_service_account_auth(self, auth_type='calendar',auth_version='v3'):
+    
+        service_account_key_file = 'credentials/service_calendar_credentials.json'
+        api_scopes = ['https://www.googleapis.com/auth/calendar.events']
+
+        user_to_impersonate = 'timetable_calendar_sync@bridgend.ac.uk'
+
+        credentials = service_account.Credentials.from_service_account_file(
+            service_account_key_file,
+            scopes=api_scopes,
+        )
+
+        credentials = credentials.with_subject(user_to_impersonate)
+
+        return build(auth_type, auth_version, credentials=credentials)
+
     def exponential_backoff(self, api_function, *args, max_retries=10, initial_delay=1, **kwargs):
         retry_delay = initial_delay
 
